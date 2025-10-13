@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adaptive Reading Tool for ESL Learners</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: #666;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+
+        .controls-panel {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-group h3 {
+            color: #764ba2;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        select, input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
+
+        .value-display {
+            text-align: right;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button.secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .reading-panel {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            min-height: 500px;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .complexity-indicator {
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .complexity-low {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .complexity-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .complexity-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .simplified-text {
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .simplified-text p {
+            margin-bottom: 1em;
+        }
+
+        .word-highlight {
+            background: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 3px;
+            cursor: help;
+            position: relative;
+        }
+
+        .word-highlight:hover {
+            background: #ffd700;
+        }
+
+        .tooltip {
+            display: none;
+            position: absolute;
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            z-index: 1000;
+            margin-bottom: 5px;
+        }
+
+        .word-highlight:hover .tooltip {
+            display: block;
+        }
+
+        .progress-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .progress-bar {
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .comprehension-quiz {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f0f7ff;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .quiz-question {
+            margin-bottom: 20px;
+        }
+
+        .quiz-options {
+            margin-top: 10px;
+        }
+
+        .quiz-option {
+            padding: 12px;
+            margin: 8px 0;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quiz-option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .quiz-option.correct {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .quiz-option.incorrect {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .controls-panel {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 Adaptive Reading Tool for ESL Learners</h1>
+            <p>Personalized text simplification that adapts to your reading level and preferences</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Controls Panel -->
+            <div class="controls-panel">
+                <div class="control-group">
+                    <h3>📝 Text Appearance</h3>
+                    <label>Font Size</label>
+                    <input type="range" id="fontSize" min="12" max="24" value="16" step="1">
+                    <div class="value-display" id="fontSizeValue">16px</div>
+
+                    <label>Line Spacing</label>
+                    <input type="range" id="lineSpacing" min="1.2" max="2.5" value="1.8" step="0.1">
+                    <div class="value-display" id="lineSpacingValue">1.8</div>
+
+                    <label>Text Width</label>
+                    <select id="textWidth">
+                        <option value="100%">Full Width</option>
+                        <option value="80%" selected>Comfortable (80%)</option>
+                        <option value="60%">Narrow (60%)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <h3>⚙️ Simplification Level</h3>
+                    <label>Target Complexity</label>
+                    <select id="targetLevel">
+                        <option value="1">Beginner (A1-A2)</option>
+                        <option value="2" selected>Intermediate (B1)</option>
+                        <option value="3">Advanced (B2+)</option>
+                    </select>
+
+                    <label>
+                        <input type="checkbox" id="highlightComplex" checked>
+                        Highlight complex words
+                    </label>
+
+                    <label>
+                        <input type="checkbox" id="showDefinitions" checked>
+                        Show definitions on hover
+                    </label>
+                </div>
+
+                <div class="control-group">
+                    <h3>🎯 Learning Features</h3>
+                    <label>
+                        <input type="checkbox" id="enableQuiz">
+                        Enable comprehension check
+                    </label>
+
+                    <label>
+                        <input type="checkbox" id="trackProgress" checked>
+                        Track reading progress
+                    </label>
+                </div>
+
+                <button onclick="resetSettings()">Reset to Default</button>
+                <button onclick="saveSettings()" class="secondary">Save My Preferences</button>
+            </div>
+
+            <!-- Reading Panel -->
+            <div class="reading-panel">
+                <div class="input-section">
+                    <h2>Enter Text to Simplify</h2>
+                    <textarea id="inputText" placeholder="Paste any English text here, and I'll adapt it to your reading level...
+
+Try this sample:
+The implementation of sustainable agricultural practices has become increasingly imperative in contemporary society. Environmental degradation, exacerbated by conventional farming methodologies, necessitates a paradigm shift toward more ecologically conscientious approaches. Farmers are consequently adopting innovative techniques such as crop rotation, integrated pest management, and precision agriculture to mitigate environmental impact while maintaining productivity."></textarea>
+                    <button onclick="simplifyText()">📖 Simplify & Adapt Text</button>
+                </div>
+
+                <div id="statsSection" class="hidden">
+                    <div class="stats-bar">
+                        <div class="stat-item">
+                            <div class="stat-label">Original Complexity</div>
+                            <div class="stat-value" id="originalComplexity">-</div>
+                            <div class="complexity-indicator" id="originalIndicator"></div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Simplified Complexity</div>
+                            <div class="stat-value" id="simplifiedComplexity">-</div>
+                            <div class="complexity-indicator" id="simplifiedIndicator"></div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Word Count</div>
+                            <div class="stat-value" id="wordCount">-</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Avg. Sentence Length</div>
+                            <div class="stat-value" id="avgSentence">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="outputSection" class="hidden">
+                    <h2>Simplified Text</h2>
+                    <div class="simplified-text" id="simplifiedOutput"></div>
+                </div>
+
+                <div id="quizSection" class="hidden">
+                    <div class="comprehension-quiz">
+                        <h3>📋 Comprehension Check</h3>
+                        <div id="quizContent"></div>
+                        <button onclick="submitQuiz()">Check Answers</button>
+                    </div>
+                </div>
+
+                <div id="progressSection" class="hidden">
+                    <div class="progress-section">
+                        <h3>📊 Your Progress</h3>
+                        <p>Texts simplified: <strong id="textsProcessed">0</strong></p>
+                        <p>Average comprehension: <strong id="avgComprehension">-%</strong></p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill" style="width: 0%">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // User preferences and progress tracking
+        let userProgress = {
+            textsProcessed: 0,
+            totalScore: 0,
+            quizzesTaken: 0
+        };
+
+        // Load saved settings on page load
+        window.onload = function() {
+            loadSettings();
+            loadProgress();
+        };
+
+        // Apply visual settings
+        function applySettings() {
+            const fontSize = document.getElementById('fontSize').value;
+            const lineSpacing = document.getElementById('lineSpacing').value;
+            const textWidth = document.getElementById('textWidth').value;
+
+            const output = document.getElementById('simplifiedOutput');
+            output.style.fontSize = fontSize + 'px';
+            output.style.lineHeight = lineSpacing;
+            output.style.maxWidth = textWidth;
+
+            document.getElementById('fontSizeValue').textContent = fontSize + 'px';
+            document.getElementById('lineSpacingValue').textContent = lineSpacing;
+        }
+
+        // Event listeners for real-time updates
+        document.getElementById('fontSize').addEventListener('input', applySettings);
+        document.getElementById('lineSpacing').addEventListener('input', applySettings);
+        document.getElementById('textWidth').addEventListener('change', applySettings);
+
+        // Calculate text complexity score
+        function calculateComplexity(text) {
+            const words = text.split(/\s+/).filter(w => w.length > 0);
+            const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+            
+            const avgWordLength = words.reduce((sum, w) => sum + w.length, 0) / words.length;
+            const avgSentenceLength = words.length / sentences.length;
+            
+            // Simple complexity score (1-10)
+            const score = Math.min(10, Math.round(
+                (avgWordLength * 0.5) + (avgSentenceLength * 0.3)
+            ));
+            
+            return {
+                score: score,
+                wordCount: words.length,
+                avgSentence: Math.round(avgSentenceLength),
+                level: score <= 4 ? 'Low' : score <= 7 ? 'Medium' : 'High'
+            };
+        }
+
+        // Simplify text based on target level
+        function simplifyText() {
+            const inputText = document.getElementById('inputText').value.trim();
+            if (!inputText) {
+                alert('Please enter some text to simplify!');
+                return;
+            }
+
+            const targetLevel = parseInt(document.getElementById('targetLevel').value);
+            const highlightComplex = document.getElementById('highlightComplex').checked;
+            const showDefinitions = document.getElementById('showDefinitions').checked;
+
+            // Calculate original complexity
+            const originalStats = calculateComplexity(inputText);
+            
+            // Perform simplification
+            let simplified = performSimplification(inputText, targetLevel);
+            
+            // Calculate simplified complexity
+            const simplifiedStats = calculateComplexity(simplified);
+            
+            // Display stats
+            document.getElementById('statsSection').classList.remove('hidden');
+            document.getElementById('originalComplexity').textContent = originalStats.score;
+            document.getElementById('simplifiedComplexity').textContent = simplifiedStats.score;
+            document.getElementById('wordCount').textContent = simplifiedStats.wordCount;
+            document.getElementById('avgSentence').textContent = simplifiedStats.avgSentence + ' words';
+            
+            updateComplexityIndicator('originalIndicator', originalStats.level);
+            updateComplexityIndicator('simplifiedIndicator', simplifiedStats.level);
+            
+            // Display simplified text with optional highlighting
+            document.getElementById('outputSection').classList.remove('hidden');
+            if (highlightComplex && showDefinitions) {
+                simplified = addWordHighlights(simplified, targetLevel);
+            }
+            document.getElementById('simplifiedOutput').innerHTML = simplified;
+            
+            applySettings();
+            
+            // Update progress
+            userProgress.textsProcessed++;
+            updateProgress();
+            
+            // Show quiz if enabled
+            if (document.getElementById('enableQuiz').checked) {
+                generateQuiz(simplified);
+            }
+        }
+
+        function performSimplification(text, targetLevel) {
+            // Split into sentences
+            let sentences = text.split(/([.!?]+)/).filter(s => s.trim());
+            let simplified = '';
+            
+            // Vocabulary replacements based on level
+            const replacements = {
+                1: { // Beginner
+                    'implementation': 'use',
+                    'sustainable': 'eco-friendly',
+                    'imperative': 'very important',
+                    'contemporary': 'modern',
+                    'degradation': 'damage',
+                    'exacerbated': 'made worse',
+                    'conventional': 'traditional',
+                    'methodologies': 'methods',
+                    'necessitates': 'requires',
+                    'paradigm shift': 'big change',
+                    'ecologically': 'environmentally',
+                    'conscientious': 'careful',
+                    'consequently': 'so',
+                    'innovative': 'new',
+                    'mitigate': 'reduce',
+                    'productivity': 'production'
+                },
+                2: { // Intermediate
+                    'implementation': 'using',
+                    'imperative': 'necessary',
+                    'exacerbated': 'worsened',
+                    'methodologies': 'methods',
+                    'necessitates': 'needs',
+                    'paradigm shift': 'major change',
+                    'consequently': 'therefore',
+                    'mitigate': 'reduce'
+                }
+            };
+            
+            const levelReplacements = replacements[targetLevel] || {};
+            
+            // Process text
+            for (let i = 0; i < sentences.length; i++) {
+                let sentence = sentences[i];
+                
+                // Skip punctuation
+                if (sentence.match(/^[.!?]+$/)) {
+                    simplified += sentence + ' ';
+                    continue;
+                }
+                
+                // Replace complex words
+                Object.keys(levelReplacements).forEach(complex => {
+                    const regex = new RegExp('\\b' + complex + '\\b', 'gi');
+                    sentence = sentence.replace(regex, levelReplacements[complex]);
+                });
+                
+                // Simplify sentence structure for beginner level
+                if (targetLevel === 1) {
+                    // Split long sentences at commas
+                    if (sentence.includes(',') && sentence.split(/\s+/).length > 15) {
+                        sentence = sentence.replace(/,\s+/g, '. ');
+                    }
+                }
+                
+                simplified += sentence;
+            }
+            
+            // Format into paragraphs
+            const paragraphs = simplified.split(/\.\s+/).filter(s => s.trim());
+            const formatted = paragraphs.map((p, i) => {
+                return '<p>' + p.trim() + (p.endsWith('.') ? '' : '.') + '</p>';
+            }).join('');
+            
+            return formatted;
+        }
+
+        function addWordHighlights(text, targetLevel) {
+            const complexWords = {
+                'sustainable': 'able to continue without harming the environment',
+                'agricultural': 'related to farming',
+                'practices': 'methods or ways of doing something',
+                'environmental': 'related to nature and surroundings',
+                'degradation': 'damage or worsening condition',
+                'conventional': 'traditional or usual',
+                'integrated': 'combined together',
+                'precision': 'very exact and accurate'
+            };
+            
+            let highlighted = text;
+            Object.keys(complexWords).forEach(word => {
+                const regex = new RegExp('\\b(' + word + ')\\b', 'gi');
+                highlighted = highlighted.replace(regex, 
+                    `<span class="word-highlight">$1<span class="tooltip">${complexWords[word]}</span></span>`
+                );
+            });
+            
+            return highlighted;
+        }
+
+        function updateComplexityIndicator(elementId, level) {
+            const indicator = document.getElementById(elementId);
+            indicator.textContent = level;
+            indicator.className = 'complexity-indicator complexity-' + level.toLowerCase();
+        }
+
+        function generateQuiz(text) {
+            const questions = [
+                {
+                    question: "What is the main topic of this text?",
+                    options: [
+                        "Modern farming methods",
+                        "Environmental problems",
+                        "Food production",
+                        "Weather patterns"
+                    ],
+                    correct: 0
+                },
+                {
+                    question: "According to the text, why are farmers changing their methods?",
+                    options: [
+                        "To make more money",
+                        "To help the environment",
+                        "Because of new laws",
+                        "To grow different crops"
+                    ],
+                    correct: 1
+                }
+            ];
+            
+            let quizHTML = '';
+            questions.forEach((q, i) => {
+                quizHTML += `
+                    <div class="quiz-question">
+                        <p><strong>${i + 1}. ${q.question}</strong></p>
+                        <div class="quiz-options">
+                            ${q.options.map((opt, j) => 
+                                `<div class="quiz-option" onclick="selectOption(${i}, ${j})" id="q${i}_opt${j}">${opt}</div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('quizContent').innerHTML = quizHTML;
+            document.getElementById('quizSection').classList.remove('hidden');
+            
+            // Store quiz data
+            window.currentQuiz = questions;
+            window.userAnswers = [];
+        }
+
+        function selectOption(questionIndex, optionIndex) {
+            // Clear previous selections for this question
+            for (let i = 0; i < 4; i++) {
+                const opt = document.getElementById(`q${questionIndex}_opt${i}`);
+                if (opt) {
+                    opt.classList.remove('correct', 'incorrect');
+                    opt.style.borderColor = '#e0e0e0';
+                }
+            }
+            
+            // Highlight selected option
+            const selected = document.getElementById(`q${questionIndex}_opt${optionIndex}`);
+            selected.style.borderColor = '#667eea';
+            
+            window.userAnswers[questionIndex] = optionIndex;
+        }
+
+        function submitQuiz() {
+            if (!window.currentQuiz || window.userAnswers.length < window.currentQuiz.length) {
+                alert('Please answer all questions first!');
+                return;
+            }
+            
+            let correct = 0;
+            window.currentQuiz.forEach((q, i) => {
+                const userAnswer = window.userAnswers[i];
+                const optElement = document.getElementById(`q${i}_opt${userAnswer}`);
+                
+                if (userAnswer === q.correct) {
+                    optElement.classList.add('correct');
+                    correct++;
+                } else {
+                    optElement.classList.add('incorrect');
+                    document.getElementById(`q${i}_opt${q.correct}`).classList.add('correct');
+                }
+            });
+            
+            const score = Math.round((correct / window.currentQuiz.length) * 100);
+            userProgress.totalScore += score;
+            userProgress.quizzesTaken++;
+            updateProgress();
+            
+            alert(`You got ${correct} out of ${window.currentQuiz.length} correct! (${score}%)`);
+        }
+
+        function updateProgress() {
+            document.getElementById('progressSection').classList.remove('hidden');
+            document.getElementById('textsProcessed').textContent = userProgress.textsProcessed;
+            
+            if (userProgress.quizzesTaken > 0) {
+                const avgScore = Math.round(userProgress.totalScore / userProgress.quizzesTaken);
+                document.getElementById('avgComprehension').textContent = avgScore + '%';
+                document.getElementById('progressFill').style.width = avgScore + '%';
+                document.getElementById('progressFill').textContent = avgScore + '%';
+            }
+            
+            saveProgress();
+        }
+
+        function saveSettings() {
+            const settings = {
+                fontSize: document.getElementById('fontSize').value,
+                lineSpacing: document.getElementById('lineSpacing').value,
+                textWidth: document.getElementById('textWidth').value,
+                targetLevel: document.getElementById('targetLevel').value
+            };
+            localStorage.setItem('readingToolSettings', JSON.stringify(settings));
+            alert('Settings saved!');
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('readingToolSettings');
+            if (saved) {
+                const settings = JSON.parse(saved);
+                document.getElementById('fontSize').value = settings.fontSize;
+                document.getElementById('lineSpacing').value = settings.lineSpacing;
+                document.getElementById('textWidth').value = settings.textWidth;
+                document.getElementById('targetLevel').value = settings.targetLevel;
+                applySettings();
+            }
+        }
+
+        function saveProgress() {
+            localStorage.setItem('readingToolProgress', JSON.stringify(userProgress));
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem('readingToolProgress');
+            if (saved) {
+                userProgress = JSON.parse(saved);
+                updateProgress();
+            }
+        }
+
+        function resetSettings() {
+            document.getElementById('fontSize').value = 16;
+            document.getElementById('lineSpacing').value = 1.8;
+            document.getElementById('textWidth').value = '80%';
+            document.getElementById('targetLevel').value = 2;
+            applySettings();
+        }
+    </script>
+</body>
+</html>
