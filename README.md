@@ -181,10 +181,10 @@ Retrieved from https://[your-username].github.io/adaptive-reading-tool/
 
 ## 📧 Contact
 
-Questions, feedback, or partnership inquiries: [your-email]
+Questions, feedback, or partnership inquiries: lib32d@gmail.com
 
 ---
 
 **Accessibility Statement**: This tool is designed with cognitive accessibility in mind. If you encounter barriers to use, please contact us so we can improve.
 
-**Research Ethics**: This project will undergo UCLA IRB review before any systematic data collection from human participants.
+**Research Ethics**: This project will undergo an IRB review before any systematic data collection from human participants.
