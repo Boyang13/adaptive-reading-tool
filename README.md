@@ -36,7 +36,7 @@ This tool addresses these challenges through **adaptive text simplification** an
 ## 🚀 How to Use
 
 ### Live Demo
-Visit: `https://[your-username].github.io/adaptive-reading-tool/`
+Visit: `https://Boyang13.github.io/adaptive-reading-tool/`
 
 ### Quick Start
 1. **Paste any English text** into the input box (or try the sample text)
@@ -161,8 +161,8 @@ This tool will be refined through:
 If you use this tool in research or teaching:
 
 ```
-[Your Name]. (2025). Adaptive Reading Tool for ESL Learners. 
-Retrieved from https://[your-username].github.io/adaptive-reading-tool/
+Li, Boyang. (2025). Adaptive Reading Tool for ESL Learners. 
+Retrieved from https://Boyang13.github.io/adaptive-reading-tool/
 ```
 
 ## 🔒 Privacy & Data
